@@ -1,0 +1,118 @@
+---
+title: "Onde recebemos mais votos?"
+author: "André Brito"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+  editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+source("1-tratamento.R")
+source("0-funcoes.R")
+library(tidyverse)
+library(huxtable)
+library(xtable)
+library(kableExtra)
+library(knitr)
+library(viridis)
+```
+
+## Onde recebemos mais votos?
+
+Um problema recorrente da política brasileira é a *baixa representação
+das mulheres na política nacional*. O objetivo desse trabalho é
+verificar em quais unidades federativas, regiões e matizes ideológicas
+as mulheres receberam mais votos nas eleições de 2020. Este trabalho se
+detém na análise dos votos para as **prefeituras**, considerando, para
+tanto, apenas o total de votos válidos no primeiro turno das eleições.
+Os dados utilizados foram importados do repositório do **TSE** a partir
+do pacote [**electionsBR**](https://electionsbr.com/).
+
+
+## Os votos totais no país
+
+Observando apenas os números totais, podemos perceber que há uma enorme diferença na oferta de candidaturas entre homens e mulheres.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+tab_1 <- func_tabela(base_2020, DS_GENERO)
+
+tab_1 <- tab_1 %>%  dplyr::mutate_if(is.numeric, 
+                 format, 
+                 digits = 3,
+                 big.mark = ".")
+
+colnames(tab_1) <- c("Gênero", "Candidaturas", "%", "Votos", "%")
+
+kbl(tab_1,
+    caption = "Total de candidaturas e votos por gênero") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+```
+
+## Os votos totais por Estado da federação
+
+No **Gráfico 1** podemos observar a proporção de votos recebidos nos estados da federação por gênero. Mesmo observando uma variação importante entre as UFs, ainda é muito baixa a proporção de votos dados a candidatas do gênero *feminino*. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+k <-  base_2020 %>% group_by(SG_UF,DS_GENERO) %>% 
+  summarize(
+    Votos = sum(VOTOS),
+    Total = unique(VOTOS_UF),
+    Porcentagem = porcent(Votos, Total)
+    )
+
+k$SG_UF <- factor(k$SG_UF, levels = c("PE", "SE", "TO", "RN", "AC", "PB", "MA", 
+                                      "BA", "AL", "RJ", "PI", "CE", "RR", "RS", 
+                                      "PA", "AP", "RO", "MG", "GO", "PR", "SP",
+                                      "MT", "MS", "SC", "ES", "AM"))
+
+m <-  ggplot(k, aes(fill=DS_GENERO, y=SG_UF, x=Votos)) + 
+  geom_bar(position="fill", stat="identity") + theme_classic()+
+  scale_fill_viridis(discrete = T, option = "E") +
+  ggtitle("Proporção de votos totais por Estado")
+
+print(m)
+```
+
+
+
+## Your Familiar Tools
+
+Feel free to use the `knitr` infrastructure with dozens of tunable
+options in your document.
+
+```{r echo=FALSE}
+
+```
+
+You can include code snippets of languages other than R, but note that
+the block header has no curly brackets around the language name.
+
+``` {.cpp}
+// [[Rcpp::export]]
+NumericVector timesTwo(NumericVector x) {
+    return x * 2;
+}
+```
+
+You can also write math expressions, e.g. $Y = X\beta + \epsilon$,
+footnotes[^1], and tables, e.g. using `knitr::kable()`.
+
+[^1]: A footnote here.
+
+```{r eval=FALSE, include=FALSE, results='asis'}
+knitr::kable()
+```
+
+## Stay Tuned
+
+Please visit the [development
+page](https://github.com/yixuan/prettydoc/) of the `prettydoc` package
+for latest updates and news. Comments, bug reports and pull requests are
+always welcome.

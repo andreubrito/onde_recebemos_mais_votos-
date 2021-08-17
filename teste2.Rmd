@@ -1,0 +1,50 @@
+---
+title: "Projeto 2"
+author: "André"
+date: "16/08/2021"
+output: 
+  html_document:
+    theme: united
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(huxtable)
+library(xtable)
+library(kableExtra)
+library(knitr)
+```
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+source("1-tratamento.R")
+source("0-funcoes.R")
+```
+
+## Onde recebemos mais votos?
+
+Um problema recorrente da política brasileira é a *baixa representação
+das mulheres na política nacional*. O objetivo desse trabalho é
+verificar em quais unidades federativas, regiões e matizes ideológicas
+as mulheres receberam mais votos nas eleições de 2020. Este trabalho se
+detém na análise dos votos para as **prefeituras**, considerando, para
+tanto, apenas o total de votos válidos no primeiro turno das eleições.
+Os dados utilizados foram importados do repositório do **TSE** a partir
+do pacote [**electionsBR**](https://electionsbr.com/).
+
+
+## Total de candidaturas e votos
+
+Observando apenas os números totais, podemos perceber que há uma enorme diferença na oferta de candidaturas entre homens e mulheres.
+
+```{r include=FALSE}
+tab_1 <- readr::read_rds("data/tabela1.rds")
+colnames(tab_1) <- c("Gênero", "Candidaturas", "%", "Votos", "%")
+
+```
+
+
+```{r echo=FALSE}
+kable(tab_1) %>% kable_classic(full_width = F, html_font = "Cambria")
+```
